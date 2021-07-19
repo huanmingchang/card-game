@@ -1,3 +1,11 @@
+const GAME_STATE = {
+  FirstCardAwaits: 'FirstCardAwaits',
+  SecondCardAwaits: 'SecondCardAwaits',
+  CardsMatchFailed: 'CardsMatchFailed',
+  CardsMatched: 'CardsMatched',
+  GameFinished: 'GameFinished',
+}
+
 const Symbols = [
   'https://image.flaticon.com/icons/svg/105/105223.svg', // 黑桃
   'https://image.flaticon.com/icons/svg/105/105220.svg', // 愛心
@@ -16,7 +24,7 @@ const view = {
     const number = this.transformNumber((index % 13) + 1)
     const symbol = Symbols[Math.floor(index / 13)]
     return `
-        <p>${number}</p>
+      <p>${number}</p>
       <img src="${symbol}" alt="">
       <p>${number}</p>
       `
@@ -49,10 +57,9 @@ const view = {
         return number
     }
   },
-  displayCards() {
+  displayCards(indexes) {
     const rootElement = document.querySelector('#cards')
-    rootElement.innerHTML = utility
-      .getRandomNumberArray(52)
+    rootElement.innerHTML = indexes
       .map((index) => this.getCardElement(index))
       .join('')
   },
@@ -72,7 +79,18 @@ const utility = {
   },
 }
 
-view.displayCards()
+const model = {
+  revealedCards: [],
+}
+
+const controller = {
+  currentState: GAME_STATE.FirstCardAwaits,
+  generateCards() {
+    view.displayCards(utility.getRandomNumberArray(52))
+  },
+}
+
+controller.generateCards()
 
 document.querySelectorAll('.card').forEach((card) => {
   card.addEventListener('click', (event) => {

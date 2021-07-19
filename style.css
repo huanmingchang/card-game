@@ -15,7 +15,19 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  /* 
+  animation-name: flip;
+  animation-duration: 0.5s; */
 }
+
+/* @keyframes flip {
+    from {
+      transform: rotateY(0deg)
+    }
+    to {
+      transform: rotateY(180deg);
+      transition: all 0.6s;
+} */
 
 .card img {
   max-width: 30%;
