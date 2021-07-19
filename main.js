@@ -6,17 +6,35 @@ const Symbols = [
 ]
 
 const view = {
+  // 回傳背面
   getCardElement(index) {
+    return `<div data-index="${index}" class="card back"></div>`
+  },
+
+  // 回傳正面
+  getCardContent(index) {
     const number = this.transformNumber((index % 13) + 1)
     const symbol = Symbols[Math.floor(index / 13)]
     return `
-     <div class="card">
-      <p>${number}</p>
+        <p>${number}</p>
       <img src="${symbol}" alt="">
       <p>${number}</p>
-    </div>
-    `
+      `
   },
+
+  flipCard(card) {
+    console.log(card)
+    // 現在是背面，回傳正面
+    if (card.classList.contains('back')) {
+      card.classList.remove('back')
+      card.innerHTML = this.getCardContent(Number(card.dataset.index))
+      return
+    }
+    // 現在是正面，回傳背面
+    card.classList.add('back')
+    card.innerHTML = null
+  },
+
   transformNumber(number) {
     switch (number) {
       case 1:
@@ -55,3 +73,9 @@ const utility = {
 }
 
 view.displayCards()
+
+document.querySelectorAll('.card').forEach((card) => {
+  card.addEventListener('click', (event) => {
+    view.flipCard(card)
+  })
+})
