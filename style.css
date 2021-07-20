@@ -15,8 +15,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  /* 
-  animation-name: flip;
+
+  /* animation-name: flip;
   animation-duration: 0.5s; */
 }
 
@@ -46,4 +46,8 @@
 .back {
   background: url('https://assets-lighthouse.alphacamp.co/uploads/image/file/9222/ExportedContentImage_00.png');
   background-size: cover;
+}
+
+.paired {
+  background-color: #dae0e3;,
 }

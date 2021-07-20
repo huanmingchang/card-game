@@ -63,6 +63,10 @@ const view = {
       .map((index) => this.getCardElement(index))
       .join('')
   },
+
+  pairCard(card) {
+    card.classList.add('paired')
+  },
 }
 
 const utility = {
@@ -81,6 +85,13 @@ const utility = {
 
 const model = {
   revealedCards: [],
+
+  isRevealedCardMatched() {
+    return (
+      this.revealedCards[0].dataset.index % 13 ===
+      this.revealedCards[1].dataset.index % 13
+    )
+  },
 }
 
 const controller = {
@@ -88,12 +99,50 @@ const controller = {
   generateCards() {
     view.displayCards(utility.getRandomNumberArray(52))
   },
+
+  dispatchCardAction(card) {
+    if (!card.classList.contains('back')) {
+      return
+    }
+
+    switch (this.currentState) {
+      case GAME_STATE.FirstCardAwaits:
+        view.flipCard(card)
+        model.revealedCards.push(card)
+        this.currentState = GAME_STATE.SecondCardAwaits
+        break
+      case GAME_STATE.SecondCardAwaits:
+        view.flipCard(card)
+        model.revealedCards.push(card)
+        if (model.isRevealedCardMatched()) {
+          this.currentState = GAME_STATE.CardsMatched
+          view.pairCard(model.revealedCards[0])
+          view.pairCard(model.revealedCards[1])
+          model.revealedCards = []
+          this.currentState = GAME_STATE.FirstCardAwaits
+        } else {
+          this.currentState = GAME_STATE.CardsMatchFailed
+          setTimeout(() => {
+            view.flipCard(model.revealedCards[0])
+            view.flipCard(model.revealedCards[1])
+            model.revealedCards = []
+            this.currentState = GAME_STATE.FirstCardAwaits
+          }, 1000)
+        }
+        break
+    }
+    console.log('this.currentState', this.currentState)
+    console.log(
+      'revealedCards',
+      model.revealedCards.map((card) => card.dataset.index)
+    )
+  },
 }
 
 controller.generateCards()
 
 document.querySelectorAll('.card').forEach((card) => {
   card.addEventListener('click', (event) => {
-    view.flipCard(card)
+    controller.dispatchCardAction(card)
   })
 })
