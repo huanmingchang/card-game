@@ -80,6 +80,28 @@ const view = {
       '.tried'
     ).textContent = `You've tried: ${times} times`
   },
+
+  appendWrongAnimation(...cards) {
+    cards.map((card) => {
+      card.classList.add('wrong')
+      card.addEventListener(
+        'animationend',
+        (event) => event.target.classList.remove('wrong'),
+        { once: true }
+      )
+    })
+  },
+
+  showGameFinished() {
+    const div = document.createElement('div')
+    div.classList.add('completed')
+    div.innerHTML = `
+      <p>Complete!</p>
+      <p>Score: ${model.score}</p>
+      <p>You've tried: ${model.triedTimes} times</p>`
+    const header = document.querySelector('#header')
+    header.before(div)
+  },
 }
 
 const utility = {
@@ -126,18 +148,27 @@ const controller = {
         model.revealedCards.push(card)
         this.currentState = GAME_STATE.SecondCardAwaits
         break
+
       case GAME_STATE.SecondCardAwaits:
-        view.renderTriedTimes(model.triedTimes)
+        view.renderTriedTimes(++model.triedTimes)
         view.flipCards(card)
         model.revealedCards.push(card)
+
         if (model.isRevealedCardMatched()) {
           view.renderScore((model.score += 10))
           this.currentState = GAME_STATE.CardsMatched
           view.pairCards(...model.revealedCards)
           model.revealedCards = []
+
+          if (model.score === 260) {
+            this.currentState = GAME_STATE.GameFinished
+            view.showGameFinished()
+            return
+          }
           this.currentState = GAME_STATE.FirstCardAwaits
         } else {
           this.currentState = GAME_STATE.CardsMatchFailed
+          view.appendWrongAnimation(...model.revealedCards)
           setTimeout(this.resetCards, 1000)
         }
         break
